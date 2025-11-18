@@ -1,0 +1,50 @@
+{
+  "name": "eye-care-reminder",
+  "version": "1.0.0",
+  "description": "20-20-20 rule reminder app for eye health",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron .",
+    "build": "vite build && electron-builder --mac --arm64",
+    "build:renderer": "vite build",
+    "build:app": "electron-builder --mac --arm64"
+  },
+  "keywords": ["electron", "eye-care", "reminder", "20-20-20"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.2.1",
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1",
+    "vite": "^5.0.8"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-icons": "^5.0.1",
+    "styled-components": "^6.1.8"
+  },
+  "build": {
+    "appId": "com.eyecare.reminder",
+    "productName": "202020",
+    "mac": {
+      "category": "public.app-category.healthcare-fitness",
+      "target": {
+        "target": "dmg",
+        "arch": ["arm64"]
+      },
+      "icon": "assets/icon.icns"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "dist/**/*",
+      "assets/**/*"
+    ],
+    "directories": {
+      "buildResources": "assets",
+      "output": "release"
+    }
+  }
+}
