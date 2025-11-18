@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import styled from 'styled-components'
-import { IoTimerOutline } from 'react-icons/io5'
+import { IoTimerOutline, IoMoonOutline, IoSunnyOutline } from 'react-icons/io5'
 
 const Container = styled.div`
   display: flex;
@@ -8,11 +8,12 @@ const Container = styled.div`
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background-color: #ffffff;
+  background-color: ${props => props.$darkMode ? 'rgb(32, 67, 119)' : 'rgba(32, 67, 119, 0.05)'};
   padding: 18px 24px 32px 24px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
   user-select: none;
   -webkit-user-select: none;
+  transition: background-color 0.3s ease;
 `
 
 const Title = styled.h1`
@@ -24,7 +25,7 @@ const Title = styled.h1`
   cursor: default;
 `
 
-const AppIcon = styled.img`
+const Image = styled.img`
   width: 80px;
   height: 80px;
   margin-bottom: 8px;
@@ -34,26 +35,32 @@ const AppIcon = styled.img`
 
 const Description = styled.p`
   font-size: 14px;
-  color: #86868b;
+  color: ${props => props.$darkMode ? 'rgba(173, 216, 230, 0.8)' : 'rgba(32, 67, 119, 0.7)'};
   margin-bottom: 16px;
   text-align: center;
   line-height: 20px;
   max-width: 320px;
   cursor: default;
+  opacity: ${props => props.$visible ? 1 : 0};
+  max-height: ${props => props.$visible ? '100px' : '0'};
+  margin-bottom: ${props => props.$visible ? '16px' : '0'};
+  overflow: hidden;
+  transition: opacity 0.3s ease-in-out, max-height 0.3s ease-in-out, margin-bottom 0.3s ease-in-out, color 0.3s ease;
 `
 
 const TimerText = styled.div`
   font-size: 48px;
   font-weight: 300;
-  color: #1d1d1f;
+  color: ${props => props.$darkMode ? '#f5f5f7' : 'rgb(32, 67, 119)'};
   margin-bottom: 16px;
   font-variant-numeric: tabular-nums;
   cursor: default;
+  transition: color 0.3s ease;
 `
 
 const ActionButton = styled.button`
-  background-color: #2e2e2eff;
-  color: white;
+  background-color: ${props => props.$darkMode ? '#f5f5f7' : 'rgb(32, 67, 119)'};
+  color: ${props => props.$darkMode ? 'rgb(32, 67, 119)' : 'white'};
   padding: 12px 32px;
   border-radius: 12px;
   font-size: 16px;
@@ -65,7 +72,7 @@ const ActionButton = styled.button`
   margin-top: 0;
 
   &:hover {
-    background-color: #333333ff;
+    background-color: ${props => props.$darkMode ? 'rgba(245, 245, 247, 0.85)' : 'rgba(32, 67, 119, 0.85)'};
   }
 
   &:active {
@@ -75,7 +82,7 @@ const ActionButton = styled.button`
 
 const StopButton = styled.button`
   background-color: transparent;
-  color: #86868b;
+  color: ${props => props.$darkMode ? 'rgba(173, 216, 230, 0.7)' : 'rgba(32, 67, 119, 0.6)'};
   padding: 12px 32px;
   border-radius: 12px;
   font-size: 16px;
@@ -87,7 +94,7 @@ const StopButton = styled.button`
   width: 200px;
 
   &:hover {
-    background-color: #f5f5f5;
+    background-color: ${props => props.$darkMode ? 'rgba(173, 216, 230, 0.15)' : 'rgba(32, 67, 119, 0.08)'};
   }
 
   &:active {
@@ -97,14 +104,14 @@ const StopButton = styled.button`
 
 const TimerLabel = styled.div`
   font-size: 14px;
-  color: #86868b;
+  color: ${props => props.$darkMode ? 'rgba(173, 216, 230, 0.8)' : 'rgba(32, 67, 119, 0.7)'};
   margin-bottom: 4px;
   cursor: default;
   height: 18px;
   line-height: 18px;
   overflow: hidden;
   opacity: ${props => props.$visible ? 1 : 0};
-  transition: opacity 0.3s ease-in-out;
+  transition: opacity 0.3s ease-in-out, color 0.3s ease;
 `
 
 const TimerWrapper = styled.div`
@@ -127,12 +134,12 @@ const DragRegion = styled.div`
 const SettingsButton = styled.button`
   position: absolute;
   top: 12px;
-  right: 16px;
+  right: 52px;
   background: transparent;
   border: none;
   cursor: pointer;
   padding: 8px;
-  color: #86868b;
+  color: ${props => props.$darkMode ? 'rgba(173, 216, 230, 0.7)' : 'rgba(32, 67, 119, 0.6)'};
   font-size: 24px;
   display: flex;
   align-items: center;
@@ -142,7 +149,29 @@ const SettingsButton = styled.button`
   z-index: 2;
 
   &:hover {
-    color: #1d1d1f;
+    color: ${props => props.$darkMode ? '#f5f5f7' : 'rgb(32, 67, 119)'};
+  }
+`
+
+const DarkModeToggle = styled.button`
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  color: ${props => props.$darkMode ? 'rgba(173, 216, 230, 0.7)' : 'rgba(32, 67, 119, 0.6)'};
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  -webkit-app-region: no-drag;
+  z-index: 2;
+
+  &:hover {
+    color: ${props => props.$darkMode ? '#f5f5f7' : 'rgb(32, 67, 119)'};
   }
 `
 
@@ -160,19 +189,21 @@ const Modal = styled.div`
 `
 
 const ModalContent = styled.div`
-  background: white;
+  background: ${props => props.$darkMode ? 'rgba(20, 45, 80, 0.95)' : 'rgba(255, 255, 255, 0.95)'};
   padding: 32px;
   border-radius: 16px;
-  width: 320px;
+  width: 260px;
   max-width: 90%;
+  transition: background-color 0.3s ease;
 `
 
 const ModalTitle = styled.h2`
   font-size: 20px;
   font-weight: 600;
-  color: #1d1d1f;
+  color: ${props => props.$darkMode ? '#f5f5f7' : 'rgb(32, 67, 119)'};
   margin-bottom: 24px;
   cursor: default;
+  transition: color 0.3s ease;
 `
 
 const SettingRow = styled.div`
@@ -182,32 +213,34 @@ const SettingRow = styled.div`
 const SettingLabel = styled.label`
   display: block;
   font-size: 14px;
-  color: #1d1d1f;
+  color: ${props => props.$darkMode ? '#f5f5f7' : 'rgb(32, 67, 119)'};
   margin-bottom: 8px;
   font-weight: 500;
   cursor: default;
+  transition: color 0.3s ease;
 `
 
 const Select = styled.select`
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid #e5e5e5;
+  border: 1px solid ${props => props.$darkMode ? 'rgba(173, 216, 230, 0.3)' : 'rgba(32, 67, 119, 0.2)'};
   border-radius: 8px;
   font-size: 14px;
-  color: #1d1d1f;
-  background: white;
+  color: ${props => props.$darkMode ? '#f5f5f7' : 'rgb(32, 67, 119)'};
+  background: ${props => props.$darkMode ? 'rgba(20, 45, 80, 0.8)' : 'white'};
   cursor: pointer;
+  transition: all 0.3s ease;
 
   &:focus {
     outline: none;
-    border-color: #393939ff;
+    border-color: ${props => props.$darkMode ? 'rgba(173, 216, 230, 0.6)' : 'rgb(32, 67, 119)'};
   }
 `
 
 const CloseButton = styled.button`
   width: 100%;
-  background-color: #202020ff;
-  color: white;
+  background-color: ${props => props.$darkMode ? '#f5f5f7' : 'rgb(32, 67, 119)'};
+  color: ${props => props.$darkMode ? 'rgb(32, 67, 119)' : 'white'};
   padding: 12px 32px;
   border-radius: 8px;
   font-size: 14px;
@@ -217,7 +250,7 @@ const CloseButton = styled.button`
   transition: all 0.2s;
 
   &:hover {
-    background-color: #393939ff;
+    background-color: ${props => props.$darkMode ? 'rgba(173, 216, 230, 0.95)' : 'rgba(32, 67, 119, 0.85)'};
   }
 
   &:active {
@@ -227,8 +260,8 @@ const CloseButton = styled.button`
 
 const SessionInfo = styled.div`
   font-size: 12px;
-  color: #86868b;
-  margin-top: 8px;
+  color: ${props => props.$darkMode ? 'rgba(173, 216, 230, 0.7)' : 'rgba(32, 67, 119, 0.6)'};
+  margin-top: 0px;
   margin-bottom: 8px;
   text-align: center;
   cursor: default;
@@ -236,7 +269,7 @@ const SessionInfo = styled.div`
   line-height: 16px;
   overflow: hidden;
   opacity: ${props => props.$visible ? 1 : 0};
-  transition: opacity 0.3s ease-in-out;
+  transition: opacity 0.3s ease-in-out, color 0.3s ease;
 `
 
 const ButtonWrapper = styled.div`
@@ -247,6 +280,7 @@ const ButtonWrapper = styled.div`
 `
 
 const TWENTY_MINUTES = 20 * 60 * 1000; // 20 minutes in milliseconds
+const TWENTY_SECONDS = 20 * 1000; // 20 seconds in milliseconds
 
 function App() {
   const [isRunning, setIsRunning] = useState(false)
@@ -254,6 +288,15 @@ function App() {
   const [sessionElapsed, setSessionElapsed] = useState(0)
   const [showSettings, setShowSettings] = useState(false)
   const [workDuration, setWorkDuration] = useState(0) // 0 means no limit
+  const [isBreakTime, setIsBreakTime] = useState(false)
+  const [darkMode, setDarkMode] = useState(() => {
+    const saved = localStorage.getItem('darkMode')
+    if (saved !== null) {
+      return JSON.parse(saved)
+    }
+    // Check system preference
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+  })
   const intervalRef = useRef(null)
   const notificationTimeoutRef = useRef(null)
   const sessionStartTimeRef = useRef(null)
@@ -278,7 +321,7 @@ function App() {
   const sendNotification = async () => {
     try {
       await window.electronAPI.showNotification(
-        'Time for a break! 👀',
+        'Time for a 202020 break!',
         'Look at something 20 feet away for 20 seconds to rest your eyes.'
       )
     } catch (error) {
@@ -295,6 +338,7 @@ function App() {
     }
 
     setIsRunning(true)
+    setIsBreakTime(false)
     setTimeRemaining(TWENTY_MINUTES)
     sessionStartTimeRef.current = Date.now()
 
@@ -321,17 +365,109 @@ function App() {
 
       if (remaining <= 0) {
         setTimeRemaining(0)
+        setIsBreakTime(true)
         sendNotification()
-        // Reset timer after notification
+        // Start 20-second break
         clearInterval(intervalRef.current)
+        const breakStartTime = Date.now()
+        intervalRef.current = setInterval(() => {
+          // Update session elapsed time during break
+          if (sessionStartTimeRef.current) {
+            setSessionElapsed(Date.now() - sessionStartTimeRef.current)
+          }
+
+          const breakElapsed = Date.now() - breakStartTime
+          const breakRemaining = TWENTY_SECONDS - breakElapsed
+
+          if (breakRemaining <= 0) {
+            // Break is over, start next work period
+            setIsBreakTime(false)
+            clearInterval(intervalRef.current)
+            
+            // Check work duration before starting next cycle
+            if (workDuration > 0 && sessionStartTimeRef.current) {
+              const sessionElapsed = Date.now() - sessionStartTimeRef.current
+              if (sessionElapsed >= workDuration * 60 * 60 * 1000) {
+                stopSession()
+                return
+              }
+            }
+
+            const newStartTime = Date.now()
+            intervalRef.current = setInterval(() => {
+              // Update session elapsed time
+              if (sessionStartTimeRef.current) {
+                setSessionElapsed(Date.now() - sessionStartTimeRef.current)
+              }
+
+              // Check work duration again
+              if (workDuration > 0 && sessionStartTimeRef.current) {
+                const sessionElapsed = Date.now() - sessionStartTimeRef.current
+                if (sessionElapsed >= workDuration * 60 * 60 * 1000) {
+                  stopSession()
+                  sendNotification()
+                  return
+                }
+              }
+
+              const newElapsed = Date.now() - newStartTime
+              const newRemaining = TWENTY_MINUTES - newElapsed
+
+              if (newRemaining <= 0) {
+                setTimeRemaining(0)
+                setIsBreakTime(true)
+                sendNotification()
+                // Continue the cycle with another break
+                clearInterval(intervalRef.current)
+                startBreakCycle()
+              } else {
+                setTimeRemaining(newRemaining)
+              }
+            }, 100)
+          } else {
+            setTimeRemaining(breakRemaining)
+          }
+        }, 100)
+      } else {
+        setTimeRemaining(remaining)
+      }
+    }, 100)
+  }
+
+  const startBreakCycle = () => {
+    const breakStartTime = Date.now()
+    intervalRef.current = setInterval(() => {
+      // Update session elapsed time during break
+      if (sessionStartTimeRef.current) {
+        setSessionElapsed(Date.now() - sessionStartTimeRef.current)
+      }
+
+      const breakElapsed = Date.now() - breakStartTime
+      const breakRemaining = TWENTY_SECONDS - breakElapsed
+
+      if (breakRemaining <= 0) {
+        // Break is over, start next work period
+        setIsBreakTime(false)
+        clearInterval(intervalRef.current)
+        
+        // Check work duration before starting next cycle
+        if (workDuration > 0 && sessionStartTimeRef.current) {
+          const sessionElapsed = Date.now() - sessionStartTimeRef.current
+          if (sessionElapsed >= workDuration * 60 * 60 * 1000) {
+            stopSession()
+            return
+          }
+        }
+
         const newStartTime = Date.now()
+        setTimeRemaining(TWENTY_MINUTES)
         intervalRef.current = setInterval(() => {
           // Update session elapsed time
           if (sessionStartTimeRef.current) {
             setSessionElapsed(Date.now() - sessionStartTimeRef.current)
           }
 
-          // Check work duration again
+          // Check work duration
           if (workDuration > 0 && sessionStartTimeRef.current) {
             const sessionElapsed = Date.now() - sessionStartTimeRef.current
             if (sessionElapsed >= workDuration * 60 * 60 * 1000) {
@@ -346,22 +482,23 @@ function App() {
 
           if (newRemaining <= 0) {
             setTimeRemaining(0)
+            setIsBreakTime(true)
             sendNotification()
-            // Continue the cycle
             clearInterval(intervalRef.current)
-            startSession()
+            startBreakCycle()
           } else {
             setTimeRemaining(newRemaining)
           }
         }, 100)
       } else {
-        setTimeRemaining(remaining)
+        setTimeRemaining(breakRemaining)
       }
     }, 100)
   }
 
   const stopSession = () => {
     setIsRunning(false)
+    setIsBreakTime(false)
     setTimeRemaining(TWENTY_MINUTES)
     setSessionElapsed(0)
     sessionStartTimeRef.current = null
@@ -372,6 +509,24 @@ function App() {
       clearTimeout(notificationTimeoutRef.current)
     }
   }
+
+  useEffect(() => {
+    localStorage.setItem('darkMode', JSON.stringify(darkMode))
+  }, [darkMode])
+
+  useEffect(() => {
+    // Listen for system theme changes when no preference is saved
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    const handleChange = (e) => {
+      const saved = localStorage.getItem('darkMode')
+      if (saved === null) {
+        setDarkMode(e.matches)
+      }
+    }
+
+    mediaQuery.addEventListener('change', handleChange)
+    return () => mediaQuery.removeEventListener('change', handleChange)
+  }, [])
 
   useEffect(() => {
     return () => {
@@ -385,24 +540,29 @@ function App() {
   }, [])
 
   return (
-    <Container>
+    <Container $darkMode={darkMode}>
       <DragRegion />
-      <SettingsButton onClick={() => setShowSettings(true)}>
+      <DarkModeToggle $darkMode={darkMode} onClick={() => setDarkMode(!darkMode)}>
+        {darkMode ? <IoSunnyOutline /> : <IoMoonOutline />}
+      </DarkModeToggle>
+      <SettingsButton $darkMode={darkMode} onClick={() => setShowSettings(true)}>
         <IoTimerOutline />
       </SettingsButton>
       
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-        <AppIcon src="icon.png" alt="202020" />
-        <Description>
+        <Image src={darkMode ? "eye_dark.png" : "eye.png"} alt="202020" />
+        <Description $darkMode={darkMode} $visible={!isRunning}>
           Follow the 20-20-20 rule: Every 20 minutes, look at something 20 feet away for 20 seconds.
         </Description>
         
         <TimerWrapper>
-          <TimerLabel $visible={isRunning}>{isRunning ? 'Next break in' : ''}</TimerLabel>
-          <TimerText>{formatTime(timeRemaining)}</TimerText>
+          <TimerLabel $darkMode={darkMode} $visible={isRunning}>
+            {isRunning ? (isBreakTime ? 'Break time - Give your eyes a rest!' : 'Next break in') : ''}
+          </TimerLabel>
+          <TimerText $darkMode={darkMode}>{formatTime(timeRemaining)}</TimerText>
         </TimerWrapper>
 
-        <SessionInfo $visible={isRunning}>
+        <SessionInfo $darkMode={darkMode} $visible={isRunning}>
           {isRunning && (
             <>
               {`Session running for ${formatSessionTime(sessionElapsed)}`}
@@ -413,6 +573,7 @@ function App() {
 
         <ButtonWrapper>
           <ActionButton 
+            $darkMode={darkMode}
             onClick={startSession}
             style={{ 
               position: 'absolute',
@@ -425,6 +586,7 @@ function App() {
             Start Session
           </ActionButton>
           <StopButton 
+            $darkMode={darkMode}
             onClick={stopSession}
             style={{ 
               position: 'absolute',
@@ -441,12 +603,13 @@ function App() {
 
       {showSettings && (
         <Modal onClick={() => setShowSettings(false)}>
-          <ModalContent onClick={(e) => e.stopPropagation()}>
-            <ModalTitle>Settings</ModalTitle>
+          <ModalContent $darkMode={darkMode} onClick={(e) => e.stopPropagation()}>
+            <ModalTitle $darkMode={darkMode}>Timer</ModalTitle>
             
             <SettingRow>
-              <SettingLabel>Auto-stop session after:</SettingLabel>
+              <SettingLabel $darkMode={darkMode}>Auto-stop session after:</SettingLabel>
               <Select 
+                $darkMode={darkMode}
                 value={workDuration} 
                 onChange={(e) => setWorkDuration(Number(e.target.value))}
               >
@@ -460,7 +623,7 @@ function App() {
               </Select>
             </SettingRow>
 
-            <CloseButton onClick={() => setShowSettings(false)}>
+            <CloseButton $darkMode={darkMode} onClick={() => setShowSettings(false)}>
               Done
             </CloseButton>
           </ModalContent>

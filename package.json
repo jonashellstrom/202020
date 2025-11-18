@@ -1,11 +1,12 @@
 {
-  "name": "eye-care-reminder",
+  "name": "202020",
   "version": "1.0.0",
   "description": "20-20-20 rule reminder app for eye health",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "dev": "electron .",
+    "dev": "NODE_ENV=development vite & sleep 3 && NODE_ENV=development electron .",
+    "dev:vite": "vite",
     "build": "vite build && electron-builder --mac --arm64",
     "build:renderer": "vite build",
     "build:app": "electron-builder --mac --arm64"
@@ -26,7 +27,7 @@
     "styled-components": "^6.1.8"
   },
   "build": {
-    "appId": "com.eyecare.reminder",
+    "appId": "com.202020.app",
     "productName": "202020",
     "mac": {
       "category": "public.app-category.healthcare-fitness",
