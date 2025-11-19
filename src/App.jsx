@@ -14,6 +14,7 @@ const Container = styled.div`
   user-select: none;
   -webkit-user-select: none;
   transition: background-color 0.3s ease;
+  -webkit-app-region: drag;
 `
 
 const Title = styled.h1`
@@ -70,6 +71,7 @@ const ActionButton = styled.button`
   transition: all 0.3s ease-in-out;
   width: 200px;
   margin-top: 0;
+  -webkit-app-region: no-drag;
 
   &:hover {
     background-color: ${props => props.$darkMode ? 'rgba(245, 245, 247, 0.85)' : 'rgba(32, 67, 119, 0.85)'};
@@ -92,6 +94,7 @@ const StopButton = styled.button`
   margin-top: 0;
   transition: all 0.3s ease-in-out;
   width: 200px;
+  -webkit-app-region: no-drag;
 
   &:hover {
     background-color: ${props => props.$darkMode ? 'rgba(173, 216, 230, 0.15)' : 'rgba(32, 67, 119, 0.08)'};
@@ -186,6 +189,7 @@ const Modal = styled.div`
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  -webkit-app-region: no-drag;
 `
 
 const ModalContent = styled.div`
@@ -248,6 +252,7 @@ const CloseButton = styled.button`
   cursor: pointer;
   border: none;
   transition: all 0.2s;
+  -webkit-app-region: no-drag;
 
   &:hover {
     background-color: ${props => props.$darkMode ? 'rgba(173, 216, 230, 0.95)' : 'rgba(32, 67, 119, 0.85)'};
