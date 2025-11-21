@@ -546,6 +546,27 @@ function App() {
     }
   };
 
+  const toggleTimer = () => {
+    if (isRunning) {
+      stopSession();
+    } else {
+      startSession();
+    }
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Only handle Space and Enter keys, and only when settings modal is not open
+      if ((e.key === " " || e.key === "Enter") && !showSettings) {
+        e.preventDefault();
+        toggleTimer();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isRunning, showSettings]);
+
   useEffect(() => {
     localStorage.setItem("darkMode", JSON.stringify(darkMode));
   }, [darkMode]);
@@ -634,6 +655,7 @@ function App() {
           <ActionButton
             $darkMode={darkMode}
             onClick={startSession}
+            onKeyDown={(e) => e.preventDefault()}
             style={{
               position: "absolute",
               top: 0,
@@ -647,6 +669,7 @@ function App() {
           <StopButton
             $darkMode={darkMode}
             onClick={stopSession}
+            onKeyDown={(e) => e.preventDefault()}
             style={{
               position: "absolute",
               top: 0,
